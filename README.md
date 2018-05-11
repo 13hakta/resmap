@@ -3,12 +3,11 @@
 resmap analyzes decompiled [Android](https://www.android.com/) application (apk) with [apktool](https://ibotpeaches.github.io/Apktool/).
 
 You may set options:
+--cleanup [y/n] - clean definitions from unused types
 
-cleanup [y/n] - clean definitions from unused types
+--replace [y/n] - replace original files
 
-replace [y/n] - replace original files
-
-backup [y/n] - create backups of original files
+--cache [y/n] - create cache with usage data
 
 Clean from unused resources:
 `resmap.py -c -r`
