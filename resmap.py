@@ -60,6 +60,7 @@ def cleanup(tree_root, folders, tp, a):
 
 			if modified:
 				tree_sub.write(filename, xml_declaration=True, encoding='utf-8')
+				fix_quotes(filename)
 
 	if tp in ['anim', 'color', 'drawable', 'menu', 'mipmap', 'layout', 'xml', 'raw']:
 		for el in a:
@@ -73,6 +74,19 @@ def cleanup(tree_root, folders, tp, a):
 			if child.attrib['name'] == el:
 				tree_root.remove(child)
 				break
+
+# Fix XML quotes
+def fix_quotes(filename):
+	positions = [14, 18, 29, 35]
+
+	xf = open(filename, 'r+b')
+	for pos in positions:
+		xf.seek(pos)
+		xf.write(b'\x22')
+	xf.seek(0, 2)
+	xf.write(b'\x0a')
+
+	xf.close()
 
 # Check for correct environment
 if not os.path.isfile(res_folder + 'values/public.xml'):
@@ -119,6 +133,7 @@ for t in SUPPORT_TYPES:
 	ARRAYs[t] = {}
 
 value_folders = [f for f in listdir(res_folder) if (isdir(join(res_folder, f)) and f.startswith('values'))]
+smali_folders = [f for f in listdir(proj_folder) if (isdir(join(proj_folder, f)) and f.startswith('smali'))]
 
 if os.path.isfile('cache.txt') and args.cache:
 	print('Read cache')
@@ -276,66 +291,67 @@ else:
 
 	# Read and cache info from SMALI
 	print('Walk code and find IDs')
-	for dirName, subdirList, fileList in os.walk(smali_folder):
-		if args.verbose: print('\t' + dirName)
+	for code_folder in smali_folders:
+		for dirName, subdirList, fileList in os.walk(code_folder):
+			if args.verbose: print('\t' + dirName)
 
-		for fname in fileList:
-			if not (fname.startswith('R$') or fname.startswith('R.')):
-				idlist = []
-				filename = dirName + '/' + fname
-				classname = filename[8:-6]
-				classname = classname.replace('/', '.')
+			for fname in fileList:
+				if not (fname.startswith('R$') or fname.startswith('R.')):
+					idlist = []
+					filename = dirName + '/' + fname
+					classname = filename[filename.find('/', 7) + 1:-6]
+					classname = classname.replace('/', '.')
 
-				packed = 0
-				switch_len = 0
-				orig_id = ''
+					packed = 0
+					switch_len = 0
+					orig_id = ''
 
-				with open(filename) as file:
-					for line in file:
-						line = line.strip()
+					with open(filename) as file:
+						for line in file:
+							line = line.strip()
 
-						if packed == 1:
-							if line == '.end packed-switch':
-								packed = 0
-								orig_id = ''
+							if packed == 1:
+								if line == '.end packed-switch':
+									packed = 0
+									orig_id = ''
+									continue
+
+								idlist.append(hex_inc(orig_id, switch_len))
+								switch_len += 1
+
+							res = re_hexid.search(line)
+							if res:
+								idlist.append(res.group(1))
 								continue
 
-							idlist.append(hex_inc(orig_id, switch_len))
-							switch_len += 1
+							res = re_class.search(line)
+							if res:
+								resType = res.group(1)
+								if resType == 'attr': continue
 
-						res = re_hexid.search(line)
-						if res:
-							idlist.append(res.group(1))
-							continue
+								if classname in XMLs[resType]:
+									XMLs[resType][classname].add(res.group(2))
+								else:
+									XMLs[resType][classname] = set([res.group(2)])
 
-						res = re_class.search(line)
-						if res:
-							resType = res.group(1)
-							if resType == 'attr': continue
+							res = re_switch_id.search(line)
+							if res:
+								idlist.append(res.group(1))
+								continue
 
-							if classname in XMLs[resType]:
-								XMLs[resType][classname].add(res.group(2))
-							else:
-								XMLs[resType][classname] = set([res.group(2)])
+							res = re_switch2_id.search(line)
+							if res:
+								packed = 1
+								switch_len = 0
+								orig_id = res.group(1)
+								continue
 
-						res = re_switch_id.search(line)
-						if res:
-							idlist.append(res.group(1))
-							continue
+							res = re_strjumbo.search(line)
+							if res:
+								idlist.append(res.group(1))
+								continue
 
-						res = re_switch2_id.search(line)
-						if res:
-							packed = 1
-							switch_len = 0
-							orig_id = res.group(1)
-							continue
-
-						res = re_strjumbo.search(line)
-						if res:
-							idlist.append(res.group(1))
-							continue
-
-				SMALI[classname] = idlist
+					SMALI[classname] = idlist
 
 	print('Open public ID list')
 	tree = ET.parse(res_folder + 'values/public.xml')
@@ -442,46 +458,47 @@ if args.cleanup:
 	tree.write(filename, xml_declaration=True, encoding='utf-8')
 
 	print('Walk code and find resource definitions')
-	for dirName, subdirList, fileList in os.walk(smali_folder):
-		if args.verbose: print('\t' + dirName)
+	for code_folder in smali_folders:
+		for dirName, subdirList, fileList in os.walk(code_folder):
+			if args.verbose: print('\t' + dirName)
 
-		for fname in fileList:
-			if (fname.startswith('R$') and fname.endswith('.smali')):
-				fType = fname[2:].rsplit('.', 1)[0]
-				if (fType == 'attr' or fType == 'styleable'): continue
+			for fname in fileList:
+				if (fname.startswith('R$') and fname.endswith('.smali')):
+					fType = fname[2:].rsplit('.', 1)[0]
+					if (fType == 'attr' or fType == 'styleable'): continue
 
-				filename = dirName + '/' + fname
-				f_src = open(filename)
-				f_res = open(filename + '.new', 'w')
+					filename = dirName + '/' + fname
+					f_src = open(filename)
+					f_res = open(filename + '.new', 'w')
 
-				skip = False
-				for line in f_src:
-					if skip:
-						skip = False
-						continue
-
-					if line.startswith('.field public static final'):
-						varName = line[27:].rsplit(':', 1)[0]
-						stop = False
-						for el in UNUSED[fType]:
-							if el == varName:
-								stop = True
-								break
-
-						if stop:
-							skip = True
-							continue
-						else:
+					skip = False
+					for line in f_src:
+						if skip:
 							skip = False
+							continue
 
-					f_res.write(line)
+						if line.startswith('.field public static final'):
+							varName = line[27:].rsplit(':', 1)[0]
+							stop = False
+							for el in UNUSED[fType]:
+								if el == varName:
+									stop = True
+									break
 
-				f_src.close()
-				f_res.close()
+							if stop:
+								skip = True
+								continue
+							else:
+								skip = False
 
-				if args.replace:
-					if args.backup:
-						os.rename(filename, filename + '.bak')
-					os.rename(filename + '.new', filename)
+						f_res.write(line)
+
+					f_src.close()
+					f_res.close()
+
+					if args.replace:
+						if args.backup:
+							os.rename(filename, filename + '.bak')
+						os.rename(filename + '.new', filename)
 
 print('Done')
