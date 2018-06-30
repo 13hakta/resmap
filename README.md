@@ -1,6 +1,7 @@
 # resmap - Android application resource usage analyzer
 
 resmap analyzes decompiled [Android](https://www.android.com/) application (apk) with [apktool](https://ibotpeaches.github.io/Apktool/).
+Supports multidex from 1.0.1
 
 You may set options:
 --cleanup [y/n] - clean definitions from unused types

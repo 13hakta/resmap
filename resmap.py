@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # Vitaly Chekryzhev, 2018
 # Find unused resources and build a map of usages
-# v1.0
+# v1.0.1
 # 'attr/font' type is not taken in account
 
 import re, sys, os, json
