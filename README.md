@@ -18,3 +18,7 @@ Be warned: attr/font type is not taken in account.
 # java_orphan - Android application Java class usage analyzer
 
 Must be ran in smali folder
+
+It looks in manifest for main class and services.
+Everything not linked with them is marked as unused.
+
