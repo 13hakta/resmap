@@ -1,0 +1,37 @@
+.tab-pane {
+ padding: 5px 0;
+}
+
+.templated .btn-group {
+ visibility: hidden;
+}
+
+.templated > .list-group-item:hover .btn-group {
+ visibility: visible;
+}
+
+.navbar-brand {
+ animation-name: towhite;
+ animation-duration: 1s;
+}
+
+.item:hover {
+ cursor: pointer;
+ font-weight: bold;
+}
+
+.item:before {
+ padding-right: 0.5em;
+}
+
+.cat:before {
+ content: "\1f4c1";
+}
+
+.file:before {
+ content: "\1f4c4";
+}
+
+.breadcrumb-item, .cldesc {
+ cursor: pointer;
+}

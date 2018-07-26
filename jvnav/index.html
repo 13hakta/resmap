@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" class="h-100">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="author" content="13hakta">
+	<title>JTree navigator :: Explore class dependency</title>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+
+<body class="h-100">
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+		<a class="navbar-brand" href="#">Java map</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" href="#" onclick="reload()">Reload</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<div id="jbread"></div>
+	<main class="container-fluid h-100">
+		<div class="row mt-3">
+			<div class="col-sm">
+				<div id="jlist"></div>
+			</div>
+			<div class="col-sm">
+				<div id="jdescription"></div>
+			</div>
+		</div>
+	</main>
+
+	<script src="js/jquery-3.3.1.min.js"></script>
+	<script src="js/popper.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+
+	<script src="js/walker.js"></script>
+</body>
+</html>
