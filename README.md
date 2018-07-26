@@ -22,3 +22,6 @@ Must be ran in smali folder
 It looks in manifest for main class and services.
 Everything not linked with them is marked as unused.
 
+# jvnav - Web JS application to navigate class usage dependency
+
+Put file `usemap.txt` to js folder.
