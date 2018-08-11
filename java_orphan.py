@@ -301,57 +301,44 @@ classlist = list(USAGE.keys())
 classlist.sort()
 
 print("Wash out usage data")
-loop = 1
-found = 0
 
-while True:
-	print("\titer #" + str(loop))
-	ORPS.write("\n# Iter " + str(loop) + "\n")
-	found = 0
+UNUSED_tmp = {}
 
-	UNUSED_tmp = {}
+for k in classlist:
+	if k in MARKED:
+		# Protect classes in main line
+		continue
 
-	for k in classlist:
-		if k in MARKED:
-			# Protect classes in main line
-			continue
+	if args.verbose:
+		print("\t\tRemove: " + k)
 
-		if args.verbose:
-			print("\t\tRemove: " + k)
+	UNUSED_tmp[k] = 1
+	del USAGE[k]
 
-		UNUSED_tmp[k] = 1
-		del USAGE[k]
-		found = 1
+	# Check for exclusions
+	class_path = k.split('/') # TODO: check Replacements!
+	className = class_path[-1]
+	if className in int_classes:
+		continue
 
-		# Check for exclusions
-		class_path = k.split('/') # TODO: check Replacements!
-		className = class_path[-1]
-		if className in int_classes:
-			continue
+	ORPS.write("rm '" + k + ".smali'\n")
+	ORP.write(k)
+	if k in REPLACES:
+		ORP.write(' -> ' + REPLACES[k])
+	ORP.write("\n")
 
-		ORPS.write("rm '" + k + ".smali'\n")
-		ORP.write(k)
-		if k in REPLACES:
-			ORP.write(' -> ' + REPLACES[k])
-		ORP.write("\n")
+classlist = list(USAGE.keys())
+classlist.sort()
 
-	classlist = list(USAGE.keys())
-	classlist.sort()
+for k in classlist:
+	# Remove from USED unused classes
+	uplist = []
 
-	if found == 0:
-		break
+	for l in USAGE[k]:
+		if not l in UNUSED_tmp:
+			uplist.append(l)
 
-	for k in classlist:
-		# Remove from USED unused classes
-		uplist = []
-
-		for l in USAGE[k]:
-			if not l in UNUSED_tmp:
-				uplist.append(l)
-
-		USAGE[k] = uplist
-
-	loop += 1
+	USAGE[k] = uplist
 
 i = 1
 NUM = {}
