@@ -42,7 +42,7 @@ except IOError:
 
 re_service = re.compile('^\s*<service')
 re_name = re.compile('name="([^\"]+?)"')
-re_javaname = re.compile('"([^\"]+?)"')
+re_javaname = re.compile('"([^\"]+?).java"')
 re_fileclass = re.compile('\.\/([\/\-\w\d]+)(\$.+)?\.smali')
 re_resclass = re.compile('^\s*<(\w+\.[\w\.]+)\s')
 re_class = re.compile('[ \)]L([^:\(]+?);')
