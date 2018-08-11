@@ -10,6 +10,7 @@
 from os import listdir, chmod
 import io, sys, re, json
 from os.path import isfile, isdir, join, basename, dirname
+import argparse
 import treelib
 
 # Exclude core classes
@@ -39,6 +40,14 @@ try:
 except IOError:
 	print("Unable to open manifest")
 	sys.exit(1)
+
+# Parse command line arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('-c', '--cleanup', help='remove SMALI', action='store_true')
+parser.add_argument('-x', '--cache', help='store cache of usage data', action='store_true')
+parser.add_argument('-v', '--verbose', help='verbose log', action='store_true')
+
+args = parser.parse_args()
 
 re_service = re.compile('^\s*<service')
 re_name = re.compile('name="([^\"]+?)"')
@@ -81,7 +90,7 @@ REPLACES = {}
 classes = []
 classDir = ['.']
 
-if isfile(fCachefile):
+if isfile(fCachefile) and args.cache:
 	print("Read from cache")
 	C = open(fCachefile, 'r')
 	CLASS = json.loads(C.readline())
@@ -177,7 +186,7 @@ print("Cached classes:", len(CLASS))
 USAGE = {}
 USAGE_LAYOUT = {}
 
-if isfile(fCachefile2):
+if isfile(fCachefile2) and args.cache:
 	print("Read from usage cache")
 	C = open(fCachefile2, 'r')
 	USAGE = json.loads(C.readline())
@@ -205,7 +214,7 @@ else:
 	print("\t* done")
 
 
-if isfile(fCachefile3):
+if isfile(fCachefile3) and args.cache:
 	print("Read from cache layout")
 	C = open(fCachefile3, 'r')
 	USAGE_LAYOUT = json.loads(C.readline())
@@ -270,8 +279,9 @@ while len(class_line) > 0:
 
 	MARKED[cl] = 1
 
-absent.sort()
-print("ERROR! missing classes:\n" + "\n".join(absent))
+if args.verbose:
+	absent.sort()
+	print("ERROR! missing classes:\n" + "\n".join(absent))
 
 del absent
 print("\t* done")
@@ -310,7 +320,9 @@ while True:
 			# Always protect classes used in resources
 			continue
 
-		print("\t\tRemove: " + k)
+		if args.verbose:
+			print("\t\tRemove: " + k)
+
 		UNUSED_tmp[k] = 1
 		del USAGE[k]
 		found = 1
