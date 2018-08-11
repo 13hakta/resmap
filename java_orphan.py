@@ -264,6 +264,9 @@ MARKED = {}
 
 absent = []
 
+for k in USAGE_LAYOUT:
+	class_line.append(k)
+
 while len(class_line) > 0:
 	cl = class_line.pop()
 
@@ -309,15 +312,8 @@ while True:
 	UNUSED_tmp = {}
 
 	for k in classlist:
-		if not k in USAGE_LAYOUT:
-			if k in MARKED:
-				# Protect classes in main line
-				continue
-			else:
-				if len(USAGE[k]) > 0:
-					continue
-		else:
-			# Always protect classes used in resources
+		if k in MARKED:
+			# Protect classes in main line
 			continue
 
 		if args.verbose:
