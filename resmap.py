@@ -62,7 +62,7 @@ def cleanup(tree_root, folders, tp, a):
 				tree_sub.write(filename, xml_declaration=True, encoding='utf-8')
 				fix_quotes(filename)
 
-	if tp in ['anim', 'color', 'drawable', 'menu', 'mipmap', 'layout', 'xml', 'raw']:
+	if tp in ['anim', 'animator', 'color', 'drawable', 'menu', 'mipmap', 'layout', 'xml', 'raw']:
 		for el in a:
 			rm_resource(tp, el)
 
@@ -250,7 +250,7 @@ else:
 
 	print('Retrieve folder tree')
 	res_folders = [f for f in listdir(res_folder) if (isdir(join(res_folder, f)) and (
-		f.startswith(('drawable', 'menu', 'layout', 'color', 'anim'))))]
+		f.startswith(('drawable', 'menu', 'layout', 'color', 'anim', 'animator'))))]
 	res_folders.sort()
 
 	# Get file list of XML
