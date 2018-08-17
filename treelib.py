@@ -1,4 +1,5 @@
 # Flat tree
+# Vitaly Chekryzhev, 2018
 
 # Item structure:
 # Tree = Item[]
