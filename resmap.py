@@ -409,6 +409,9 @@ while True:
 				del USED[rtype][item]
 				found_unused += 1
 
+				if args.verbose:
+					print('\t\t@' + rtype + '/' + item)
+
 	if found_unused == 0: break
 
 	# Wash out
