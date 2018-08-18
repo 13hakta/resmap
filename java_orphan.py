@@ -57,6 +57,7 @@ re_resclass = re.compile('^\s*<(\w+\.[\w\.]+)\s')
 re_class = re.compile('[ \)]L([^:\(]+?);')
 re_classsub = re.compile('([\/\-\w\d]+)(\$.+)?')
 
+# Lookup for main activity and services
 for line in F:
 	if found and not hasMainAction:
 		if line.find('<action android:name="android.intent.action.MAIN"') > -1:
@@ -124,7 +125,7 @@ else:
 
 		F = open(filename, 'r')
 
-		# Get class name from obfuscator replacements
+		# Get file name name from obfuscator replacements
 		F.readline()
 		F.readline()
 		s = F.readline()
@@ -141,7 +142,6 @@ else:
 
 		classNameFull = className + part
 
-		# TODO: Check forming!
 		if ((srcName != '') and (srcName != basename(className))):
 			REPLACES[classNameFull] = dirname(className) + '/' + srcName + part
 
@@ -347,6 +347,7 @@ i = 1
 NUM = {}
 cleaned = []
 
+# Save reports
 for k in classlist:
 	USED.write(k + "\n")
 
