@@ -172,13 +172,14 @@ else:
 	print("\t* done\n")
 
 	# Dump cache
-	print("Dump cache")
-	C = open(fCachefile, 'w')
-	C.write(json.dumps(CLASS))
-	C.write("\n")
-	C.write(json.dumps(REPLACES))
-	C.close()
-	print("\t* done")
+	if args.cache:
+		print("Dump cache")
+		C = open(fCachefile, 'w')
+		C.write(json.dumps(CLASS))
+		C.write("\n")
+		C.write(json.dumps(REPLACES))
+		C.close()
+		print("\t* done")
 
 print("Cached classes:", len(CLASS))
 # TODO: Sort here
@@ -207,11 +208,12 @@ else:
 				continue
 
 	# Dump cache
-	print("Dump usage cache")
-	C = open(fCachefile2, 'w')
-	C.write(json.dumps(USAGE))
-	C.close()
-	print("\t* done")
+	if args.cache:
+		print("Dump usage cache")
+		C = open(fCachefile2, 'w')
+		C.write(json.dumps(USAGE))
+		C.close()
+		print("\t* done")
 
 
 if isfile(fCachefile3) and args.cache:
@@ -251,11 +253,12 @@ else:
 	print("\t* done")
 
 	# Dump layout cache
-	print("Dump layout cache")
-	C = open(fCachefile3, 'w')
-	C.write(json.dumps(USAGE_LAYOUT))
-	C.close()
-	print("\t* done")
+	if args.cache:
+		print("Dump layout cache")
+		C = open(fCachefile3, 'w')
+		C.write(json.dumps(USAGE_LAYOUT))
+		C.close()
+		print("\t* done")
 
 
 # Loop package classes and mark lines
